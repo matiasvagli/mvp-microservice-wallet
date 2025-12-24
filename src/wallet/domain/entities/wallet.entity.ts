@@ -62,6 +62,16 @@ export class Wallet extends AggregateRoot {
 
   // --- Validaciones Privadas (Invariantes) ---
 
+
+  public isTeen(): boolean {
+    return this._type.isTeen();
+  }
+
+  public isStandard(): boolean {
+    return !this._type.isTeen();
+  }
+
+
   private validateIntegrity(): void {
     if (this._type.isTeen() && !this.parentWalletId) {
       throw new Error("Teen wallets must be linked to a parent wallet");
