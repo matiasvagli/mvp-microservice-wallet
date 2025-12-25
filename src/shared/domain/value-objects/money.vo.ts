@@ -1,4 +1,4 @@
-import { Currency } from './currency';
+import { Currency } from "../../../wallet/domain/value-objects/currency";
 
 export class Money {
   constructor(

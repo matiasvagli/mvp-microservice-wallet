@@ -1,7 +1,7 @@
 import { Wallet } from './wallet.entity';
 import { UUID } from '../../../shared/domain/value-objects/uuid.vo';
 import { Money } from '../../../shared/domain/value-objects/money.vo';
-import { Currency } from '../../../shared/domain/value-objects/currency';
+import { Currency } from '../value-objects/currency';
 
 jest.mock('uuid', () => ({
   v4: () => '123e4567-e89b-12d3-a456-426614174000',

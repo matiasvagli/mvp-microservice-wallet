@@ -4,7 +4,7 @@ import type { WalletRepository } from "../../domain/repositories/wallet.reposito
 import { DepositMoneyDto } from "../dtos/deposit-money.dto";
 import { UUID } from "../../../shared/domain/value-objects/uuid.vo";
 import { Money } from "../../../shared/domain/value-objects/money.vo";
-import { Currency } from "src/shared/domain/value-objects/currency";
+import { Currency } from "src/wallet/domain/value-objects/currency";
 ;
    
 

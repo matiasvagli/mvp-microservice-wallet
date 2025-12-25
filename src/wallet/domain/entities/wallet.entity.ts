@@ -1,7 +1,7 @@
 import { AggregateRoot } from "../../../shared/domain/aggregate-root";
 import { Money } from "../../../shared/domain/value-objects/money.vo";
 import { UUID } from "../../../shared/domain/value-objects/uuid.vo";
-import { WalletType } from "../../../shared/domain/value-objects/wallet-type.vo";
+import { WalletType } from "../value-objects/wallet-type.vo";
 import { MoneyDepositedEvent } from "../events/money-deposited.event";
 
 export class Wallet extends AggregateRoot {
