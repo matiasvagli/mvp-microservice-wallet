@@ -1,0 +1,7 @@
+
+
+export const AUTH_TOKENS = {
+  HASHER: Symbol('PASSWORD_HASHER'),
+  TOKEN_SERVICE: Symbol('TOKEN_SERVICE'),
+  REPOSITORY: Symbol('AUTH_REPOSITORY'),
+};
