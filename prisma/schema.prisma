@@ -10,19 +10,62 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
-
 }
-model Wallet {
-  id             String   @id @db.Uuid
-  ownerId        String   @db.Uuid
-  type           String   // Aquí guardaremos "STANDARD" o "TEEN"
-  balanceAmount  Decimal  @db.Decimal(20, 2) 
-  currency       String
-  parentWalletId String?  @db.Uuid
-  whiteList      String[] 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
 
-  @@map("wallets") // Esto hace que en la DB la tabla se llame "wallets" en minúscula
+enum WalletType {
+  STANDARD
+  TEEN
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  username  String   @unique
+  name      String
+  // Eliminamos el email de aquí para que Account sea la única fuente de verdad
+  
+  account   Account?
+  wallet    Wallet?  
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id        String @id @default(uuid()) @db.Uuid
+  email     String @unique // Fuente única de verdad para la identidad
+  password  String 
+  
+  userId    String @unique @db.Uuid
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  isActive       Boolean  @default(true)
+  emailVerified  Boolean  @default(false)
+  lastLoginAt    DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("accounts")
+}
+
+model Wallet {
+  id             String     @id @default(uuid()) @db.Uuid
+  balance        Decimal    @default(0) @db.Decimal(20, 8)
+  currency       String     @default("USD")
+  type           WalletType @default(STANDARD) // Uso de Enum
+  
+  // Relación recursiva si una Wallet TEEN depende de una STANDARD
+  parentWalletId String?    @db.Uuid
+  whiteList      String[]   // Si son simples IDs, está bien por ahora.
+  
+  userId         String     @unique @db.Uuid
+  user           User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  
+  version        Int        @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@map("wallets")
 }

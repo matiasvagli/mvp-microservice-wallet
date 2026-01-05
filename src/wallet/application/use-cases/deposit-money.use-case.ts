@@ -1,19 +1,20 @@
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import type { WalletRepository } from "../../domain/repositories/wallet.repository.interface"; 
+import type { WalletRepository } from "../../domain/repositories/wallet.repository.interface";
 import { DepositMoneyDto } from "../dtos/deposit-money.dto";
 import { UUID } from "../../../shared/domain/value-objects/uuid.vo";
 import { Money } from "../../../shared/domain/value-objects/money.vo";
-import { Currency } from "src/wallet/domain/value-objects/currency";
+import { Currency } from "../../domain/value-objects/currency";
 ;
-   
+
 
 // wallet/application/use-cases/deposit-money.use-case.ts
+@Injectable()
 export class DepositMoneyUseCase {
   constructor(
     @Inject("WalletRepository")
     private readonly walletRepository: WalletRepository
-  ) {}
+  ) { }
 
   async execute(dto: DepositMoneyDto): Promise<void> {
     const ownerUUID = new UUID(dto.ownerId);
@@ -37,8 +38,8 @@ export class DepositMoneyUseCase {
     } catch (error) {
       // Si falla el save, podrías querer limpiar los eventos para evitar
       // que se disparen si este mismo objeto Wallet se reintenta salvar.
-      wallet.clearEvents(); 
-      throw error; 
+      wallet.clearEvents();
+      throw error;
     }
   }
 }

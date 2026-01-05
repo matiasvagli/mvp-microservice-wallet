@@ -1,98 +1,85 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Wallet MVP Microservice
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este proyecto es el microservicio principal (**Core Domain**) de una billetera digital enfocada en educación financiera para adolescentes. Gestiona la creación de cuentas, saldos, depósitos y retiros.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Arquitectura
 
-## Description
+El proyecto sigue una arquitectura **Hexagonal (Ports and Adapters)** combinada con **Domain-Driven Design (DDD)** para aislar la lógica de negocio de la infraestructura.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Estructura de Directorios
+*   `src/wallet`: Módulo principal (Agregado Wallet).
+*   `src/auth`: Módulo de Identidad y Acceso (Login/Register).
+*   `src/user`: Módulo de Perfil de Usuario (Soporte).
+*   `src/shared`: Kernel compartido (Value Objects, Clases Base).
 
-## Project setup
+Cada módulo tiene su propia estructura interna:
+*   **Domain**: Entidades, Value Objects, Eventos de Dominio, Interfaces de Repositorio.
+*   **Application**: Casos de Uso (Use Cases), DTOs.
+*   **Infrastructure**: Implementaciones de Repositorios (Prisma, In-Memory), Controllers (REST API).
+
+## Stack Tecnológico
+
+*   **Framework**: [NestJS](https://nestjs.com/) (Node.js/TypeScript).
+*   **Database ORM**: [Prisma](https://www.prisma.io/).
+*   **Testing**: Jest (Unit & E2E).
+*   **Package Manager**: Yarn.
+
+## Módulos y Funcionalidades
+
+### 1. Wallet Module
+El corazón del sistema. Maneja el dinero.
+*   **Features**: Crear Billetera (Standard/Teen), Depositar, Retirar, Consultar Saldo.
+*   **Eventos**: Emite `MoneyDepositedEvent` y `MoneyWithdrawnEvent` (actualmente locales).
+
+### 2. Auth Module
+Maneja el registro y login.
+*   **Features**: Registro de Usuario, Login (devuelve Token).
+*   **Nota**: Actualmente usa implementaciones "Fake" para hasher y tokens (MVP).
+
+### 3. User Module
+Maneja datos del perfil.
+*   **Features**: Búsqueda por ID, lógica de edad (`isTeen`).
+
+## Instalación y Ejecución
 
 ```bash
+# Instalación de dependencias
 $ yarn install
+
+# Levantar base de datos (si usas Docker localmente para Postgres)
+# $ docker-compose up -d db
+
+# Ejecutar migraciones de Prisma
+$ yarn prisma migrate dev
+
+# Iniciar servidor en modo desarrollo
+$ yarn start:dev
 ```
 
-## Compile and run the project
+## Testing
 
 ```bash
-# development
-$ yarn run start
+# Unit tests
+$ yarn test
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+# E2E tests
+$ yarn test:e2e
 ```
 
-## Run tests
+## Roadmap y Futuro (Microservicios)
 
-```bash
-# unit tests
-$ yarn run test
+Este repositorio es solo el comienzo. La arquitectura está diseñada para evolucionar hacia un sistema de **Microservicios distribuidos**.
 
-# e2e tests
-$ yarn run test:e2e
+### Próximos Pasos:
 
-# test coverage
-$ yarn run test:cov
-```
+1.  **Event Driven Architecture (RabbitMQ)**
+    *   Implementar un **Event Bus** (RabbitMQ/Kafka) para publicar los eventos de dominio (`MoneyDeposited`, `MoneyWithdrawn`) fuera de este servicio.
 
-## Deployment
+2.  **Transaction History Service (Nuevo Microservicio)**
+    *   Crear un servicio separado dedicado exclusivamente a escuchar los eventos y guardar el historial de transacciones (Logs, Auditoría) en una base de datos optimizada para lectura (CQRS).
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+3.  **API Gateway**
+    *   Implementar un Gateway para unificar la entrada a los distintos microservicios (`Wallet Core`, `Transactions`, `Notifications`).
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+4.  **Containerización**
+    *   Orquestar todo el ecosistema con **Docker Compose** para desarrollo local fácil.

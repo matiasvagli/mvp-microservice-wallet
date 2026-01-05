@@ -1,22 +1,26 @@
-import { AuthUserRepository } from "../../domain/repositories/auth-user.repository";
+import { Inject, Injectable } from "@nestjs/common";
+import type { AuthUserRepository } from "../../domain/repositories/auth-user.repository";
 import { AuthUser } from "../../domain/entities/auth-user.entity";
 import { UserId } from "../../../user/domain/value-objects/user-id.vo";
 import { UserPassword } from "../../domain/user-password.vo";
-import { PasswordHasher } from "../../domain/interfaces/password-hasher.interface.";
+import type { PasswordHasher } from "../../domain/interfaces/password-hasher.interface.";
 import { RegisterDto } from "../dtos/register.dto";
 
 
+@Injectable()
 export class RegisterUseCase {
   constructor(
+    @Inject('AuthUserRepository')
     private readonly repository: AuthUserRepository,
+    @Inject('PasswordHasher')
     private readonly hasher: PasswordHasher
-  ) {}
+  ) { }
 
   async execute(dto: RegisterDto): Promise<void> {
     // 1. Verificamos si el usuario ya existe (Regla de negocio)
     const existingUser = await this.repository.findByEmail(dto.email);
     if (existingUser) {
-      throw new Error("User already exists"); 
+      throw new Error("User already exists");
     }
 
     // 2. Validamos la password plana con el VO (Regla de negocio)

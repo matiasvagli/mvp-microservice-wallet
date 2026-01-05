@@ -1,7 +1,10 @@
 
 
 
-export class ItokenService {}export interface ITokenService {
-  generateToken(payload: object, secret: string, expiresIn: string): string;
-  verifyToken(token: string, secret: string): object | string;
+export interface ITokenService {
+  // El payload es lo único que le importa al dominio/aplicación
+  generate(payload: Record<string, any>): Promise<string>;
+  
+  // Para verificar, solo necesitamos el token
+  verify(token: string): Promise<Record<string, any> | string>;
 }

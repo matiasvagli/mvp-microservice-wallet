@@ -3,6 +3,7 @@ import { Money } from "../../../shared/domain/value-objects/money.vo";
 import { UUID } from "../../../shared/domain/value-objects/uuid.vo";
 import { WalletType } from "../value-objects/wallet-type.vo";
 import { MoneyDepositedEvent } from "../events/money-deposited.event";
+import { MoneyWithdrawnEvent } from "../events/money-withdrawn.event";
 
 export class Wallet extends AggregateRoot {
   private constructor(
@@ -38,7 +39,7 @@ export class Wallet extends AggregateRoot {
   }
 
   // --- Reglas de Negocio ---
-  
+
   deposit(amount: Money): void {
     this._balance = this._balance.add(amount);
     this.addDomainEvent(new MoneyDepositedEvent(this.id.value, amount.getAmount()));
@@ -47,12 +48,13 @@ export class Wallet extends AggregateRoot {
   withdraw(amount: Money): void {
     this.ensureCanSpend(amount);
     this._balance = this._balance.subtract(amount);
+    this.addDomainEvent(new MoneyWithdrawnEvent(this.id.value, amount.getAmount()));
   }
 
   // Nuevo método para transferencia con validación de lista blanca
   transfer(amount: Money, destinationWalletId: UUID): void {
     this.ensureCanSpend(amount);
-    
+
     if (this._type.isTeen() && !this._whiteList.includes(destinationWalletId.value)) {
       throw new Error("Target wallet is not in the whitelist for this teen account");
     }
@@ -88,11 +90,11 @@ export class Wallet extends AggregateRoot {
   get idValue(): string { return this.id.value; }
   get ownerIdValue(): string { return this.ownerId.value; }
   get balance(): Money { return this._balance; }
-  get typeValue(): string { return this._type.toString(); }
+  get typeValue(): string { return this._type.value; }
   get whiteList(): string[] { return [...this._whiteList]; }
   get parentIdValue(): string | undefined { return this.parentWalletId?.value; }
   get balanceAmount(): number { return this._balance.getAmount(); }
   get currencyValue(): string { return this._balance.getCurrency().value; }
-  get parentWalletIdValue(): string | undefined { return this.parentWalletId?.value; } 
- 
+  get parentWalletIdValue(): string | undefined { return this.parentWalletId?.value; }
+
 }

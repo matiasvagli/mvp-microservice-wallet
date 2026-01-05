@@ -8,6 +8,9 @@ export class UUID {
     }
   }
 
+  equals(other: UUID): boolean {
+    return this.value === other.value;
+  }
   static random(): UUID {
     return new UUID(uuidLib.v4());
   }
