@@ -1,7 +1,13 @@
-import { ItokenService } from "src/auth/domain/interfaces/itoken-service.interface";
+import { ITokenService } from "src/auth/domain/interfaces/itoken-service.interface";
 
 
-export class FakeTokenService implements ItokenService {
+export class FakeTokenService implements ITokenService {
+  generate(payload: Record<string, any>): Promise<string> {
+    throw new Error("Method not implemented.");
+  }
+  verify(token: string): Promise<Record<string, any> | string> {
+    throw new Error("Method not implemented.");
+  }
   generateToken(payload: object, secret: string, expiresIn: string): string {
     // En un entorno de pruebas, devolvemos un token fijo
     return "fake-jwt-token";
